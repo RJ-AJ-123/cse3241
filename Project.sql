@@ -52,18 +52,18 @@ CREATE TABLE IF NOT EXISTS Have_Between_Books_And_Promotions (
 
 CREATE TABLE  IF NOT EXISTS Customers(
     CustomerID INTEGER PRIMARY KEY,
-    ContactNumber INTEGER,
+    ContactNumber TEXT,
     Name TEXT,
     Address TEXT,
     Email TEXT
 );
 
 CREATE TABLE IF NOT EXISTS Purchases(
-    PurchaseID INTEGER,
+    PurchaseID INTEGER PRIMARY KEY ,
     CustomerID INTEGER,
     OrderStatus TEXT,
-    PurchaseDate INTEGER,
-    TotalAmount INTEGER,
+    PurchaseDate TEXT,
+    TotalAmount REAL,
     FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
         on update  CASCADE
         on delete  set null
@@ -74,13 +74,53 @@ CREATE TABLE  if not exists PurchaseDetails (
     PurchaseID  INTEGER,
     ISBN TEXT,
     Quantity INTEGER,
-    PricePerUnit INTEGER,
+    PricePerUnit REAL,
     FOREIGN KEY(PurchaseID) REFERENCES Purchases(PurchaseID)
         on update  CASCADE
-        on delete  set null
+        on delete  CASCADE,
+    FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS Reviews (
+    ReviewID    INTEGER PRIMARY KEY,
+    CustomerID  INTEGER,
+    ISBN        TEXT,
+    Rating      INTEGER,
+    ReviewText  TEXT,
+    ReviewDate  TEXT,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE,
+    FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE
+);
 
+CREATE TABLE IF NOT EXISTS Reorders (
+    ReorderID   INTEGER PRIMARY KEY,
+    ISBN        TEXT,
+    Quantity    INTEGER,
+    Status      TEXT,
+    TotalAmount REAL,
+    AdminID     INTEGER,
+    ReOrderDate TEXT,
+    FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE,
+    FOREIGN KEY (AdminID) REFERENCES Administrators(AdminID)
+       ON UPDATE CASCADE
+       ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS Inventory (
+    ISBN         TEXT PRIMARY KEY,
+    CurrentStock INTEGER,
+    FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE
+);
 
 INSERT OR REPLACE INTO Administrators (AdminID, Email, Name, ContactNumber)
 VALUES
