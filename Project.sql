@@ -26,6 +26,61 @@ CREATE table if not exists Books(
         on delete set null
 );
 
+CREATE TABLE IF NOT EXISTS Promotions (
+    PromotionID       INTEGER PRIMARY KEY,
+    PromotionName     TEXT    NOT NULL,
+    DiscountPercentage REAL,
+    StartDate         TEXT,
+    EndDate           TEXT,
+    ISBN TEXT,
+    FOREIGN KEY (ISBN) REFERENCES Books (ISBN)
+        on update  CASCADE
+        on delete  set null
+);
+
+CREATE TABLE IF NOT EXISTS Have_Between_Books_And_Promotions (
+    ISBN        TEXT,
+    PromotionID INTEGER,
+    PRIMARY KEY (ISBN, PromotionID),
+    FOREIGN KEY (ISBN) REFERENCES Books(ISBN)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE,
+    FOREIGN KEY (PromotionID) REFERENCES Promotions(PromotionID)
+       on update  CASCADE
+       on delete  set null
+);
+
+CREATE TABLE  IF NOT EXISTS Customers(
+    CustomerID INTEGER PRIMARY KEY,
+    ContactNumber INTEGER,
+    Name TEXT,
+    Address TEXT,
+    Email TEXT
+);
+
+CREATE TABLE IF NOT EXISTS Purchases(
+    PurchaseID INTEGER,
+    CustomerID INTEGER,
+    OrderStatus TEXT,
+    PurchaseDate INTEGER,
+    TotalAmount INTEGER,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+        on update  CASCADE
+        on delete  set null
+);
+
+CREATE TABLE  if not exists PurchaseDetails (
+    PurchaseDetailsID INTEGER PRIMARY KEY,
+    PurchaseID  INTEGER,
+    ISBN TEXT,
+    Quantity INTEGER,
+    PricePerUnit INTEGER,
+    FOREIGN KEY(PurchaseID) REFERENCES Purchases(PurchaseID)
+        on update  CASCADE
+        on delete  set null
+);
+
+
 
 INSERT OR REPLACE INTO Administrators (AdminID, Email, Name, ContactNumber)
 VALUES
