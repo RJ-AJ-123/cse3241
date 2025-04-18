@@ -281,3 +281,131 @@ FROM BOOKS B
 JOIN REVIEWS R ON B.ISBN = R.ISBN
 GROUP BY B.ISBN
 HAVING COUNT(R.ReviewID) >= 2;
+
+III. Advanced queries
+
+
+Query A – Total Amount Spent by Each Customer
+English:
+List each customer along with the total dollar amount they have spent on purchases.
+
+Relational Algebra:
+γ_CustomerID; SUM(TotalAmount) (CUSTOMERS ⨝ PURCHASES)
+
+SQL:
+SELECT C.Name, SUM(P.TotalAmount) AS TotalSpent
+FROM CUSTOMERS C
+JOIN PURCHASES P ON C.CustomerID = P.CustomerID
+GROUP BY C.CustomerID;
+
+
+Query B – Customers Who Spent More Than the Average
+English:
+Retrieve names and emails of customers who have spent more than the average customer.
+
+SQL:
+SELECT C.Name, C.Email
+FROM CUSTOMERS C
+JOIN PURCHASES P ON C.CustomerID = P.CustomerID
+GROUP BY C.CustomerID
+HAVING SUM(P.TotalAmount) > (
+  SELECT AVG(TotalSpent)
+  FROM (
+    SELECT SUM(TotalAmount) AS TotalSpent
+    FROM PURCHASES
+    GROUP BY CustomerID
+  )
+);
+
+
+Query C – Total Copies Sold Per Book (Descending)
+English:
+List each book title and the total number of copies sold, ordered from most to least sold.
+
+Relational Algebra:
+γ_ISBN; SUM(Quantity)(BOOKS ⨝ PURCHASEDETAILS)
+
+SQL:
+SELECT B.Title, SUM(PD.Quantity) AS TotalSold
+FROM BOOKS B
+JOIN PURCHASEDETAILS PD ON B.ISBN = PD.ISBN
+GROUP BY B.ISBN
+ORDER BY TotalSold DESC;
+
+
+Query D – Total Revenue by Book Title
+English:
+Show each book title and total revenue generated, ordered from highest to lowest.
+
+SQL:
+SELECT B.Title, SUM(PD.Quantity * PD.PricePerUnit) AS TotalRevenue
+FROM BOOKS B
+JOIN PURCHASEDETAILS PD ON B.ISBN = PD.ISBN
+GROUP BY B.ISBN
+ORDER BY TotalRevenue DESC;
+
+
+Query E – Most Popular Author (by Quantity Sold)
+English:
+Find the author who has sold the most books in terms of quantity.
+
+SQL:
+SELECT B.Authors, SUM(PD.Quantity) AS TotalSold
+FROM BOOKS B
+JOIN PURCHASEDETAILS PD ON B.ISBN = PD.ISBN
+GROUP BY B.Authors
+ORDER BY TotalSold DESC
+LIMIT 1;
+
+
+Query F – Most Profitable Author
+English:
+Identify the author who generated the most revenue from sales.
+
+SQL:
+SELECT B.Authors, SUM(PD.Quantity * PD.PricePerUnit) AS TotalProfit
+FROM BOOKS B
+JOIN PURCHASEDETAILS PD ON B.ISBN = PD.ISBN
+GROUP BY B.Authors
+ORDER BY TotalProfit DESC
+LIMIT 1;
+Query G – Customers Who Bought from the Most Profitable Author
+English:
+Show all customers who purchased books written by the most profitable author.
+
+SQL:
+WITH MostProfitable AS (
+  SELECT B.Authors
+  FROM BOOKS B
+  JOIN PURCHASEDETAILS PD ON B.ISBN = PD.ISBN
+  GROUP BY B.Authors
+  ORDER BY SUM(PD.Quantity * PD.PricePerUnit) DESC
+  LIMIT 1
+)
+SELECT DISTINCT C.*
+FROM CUSTOMERS C
+JOIN PURCHASES P ON C.CustomerID = P.CustomerID
+JOIN PURCHASEDETAILS PD ON P.PurchaseID = PD.PurchaseID
+JOIN BOOKS B ON PD.ISBN = B.ISBN
+JOIN MostProfitable M ON B.Authors = M.Authors;
+
+Query H – Authors Purchased by High-Spending Customers
+English:
+List authors whose books were purchased by customers who spent more than the average total.
+
+SQL:
+WITH HighSpenders AS (
+  SELECT CustomerID
+  FROM PURCHASES
+  GROUP BY CustomerID
+  HAVING SUM(TotalAmount) > (
+    SELECT AVG(TotalAmount)
+    FROM PURCHASES
+    GROUP BY CustomerID
+  )
+)
+SELECT DISTINCT B.Authors
+FROM BOOKS B
+JOIN PURCHASEDETAILS PD ON B.ISBN = PD.ISBN
+JOIN PURCHASES P ON PD.PurchaseID = P.PurchaseID
+WHERE P.CustomerID IN (SELECT CustomerID FROM HighSpenders);
