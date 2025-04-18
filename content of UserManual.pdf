@@ -1,0 +1,142 @@
+Section 1: Table Descriptions
+
+1. BOOKS
+Description:
+Stores all information about books sold in the store. Each book has a unique ISBN and is associated with a publisher. It includes metadata like title, authors, publication year, price, and inventory-related attributes.
+
+Key Attributes:
+
+ISBN – VARCHAR(13), Primary Key
+
+PublisherName – VARCHAR(100), Foreign Key → PUBLISHERS
+
+Title, Authors – NOT NULL
+
+Price – DECIMAL(10, 2)
+
+StockThreshold – used for triggering reorder alerts
+
+2. PUBLISHERS
+Description:
+Represents publishing companies responsible for the books sold. Contains contact and location information.
+
+Key Attributes:
+
+PublisherName – VARCHAR(100), Primary Key
+
+Email, Address, ContactNumber – optional contact fields
+
+3. PROMOTIONS
+Description:
+Represents discount campaigns associated with specific books and created by administrators. Tracks active date ranges and discount percentage.
+
+Key Attributes:
+
+PromotionID – INT, Primary Key
+
+ISBN – Foreign Key → BOOKS
+
+AdminID – Foreign Key → ADMINISTRATORS
+
+DiscountPercentage, StartDate, EndDate – NOT NULL
+
+4. HAVE_BETWEEN_BOOKS_AND_PROMOTION
+Description:
+A bridge table for a many-to-many relationship between books and promotions.
+
+Key Attributes:
+
+ISBN, PromotionID – Composite Primary Key
+
+Both are Foreign Keys
+
+5. PURCHASEDETAILS
+Description:
+Stores line-item breakdowns for each purchase, including quantity and unit price of books purchased.
+
+Key Attributes:
+
+PurchaseDetailsID – INT, Primary Key
+
+PurchaseID – FK → PURCHASES
+
+ISBN – FK → BOOKS
+
+Quantity, PricePerUnit – NOT NULL
+
+6. PURCHASES
+Description:
+Records purchases made by customers, including date, status, and total amount spent.
+
+Key Attributes:
+
+PurchaseID – INT, Primary Key
+
+CustomerID – FK → CUSTOMERS
+
+OrderStatus, PurchaseDate, TotalAmount – NOT NULL
+
+7. CUSTOMERS
+Description:
+Stores customer information including contact info and delivery address.
+
+Key Attributes:
+
+CustomerID – INT, Primary Key
+
+Name, Email – NOT NULL
+
+ContactNumber, Address – optional
+
+8. REVIEWS
+Description:
+Captures customer feedback and ratings on purchased books.
+
+Key Attributes:
+
+ReviewID – INT, Primary Key
+
+CustomerID – FK → CUSTOMERS
+
+ISBN – FK → BOOKS
+
+Rating – INT, CHECK (1 ≤ Rating ≤ 5)
+
+ReviewDate – NOT NULL
+
+9. REORDERS
+Description:
+Tracks inventory restocking requests submitted by administrators. Includes reorder quantity, amount, and status.
+
+Key Attributes:
+
+ReorderID – INT, Primary Key
+
+ISBN – FK → BOOKS
+
+AdminID – FK → ADMINISTRATORS
+
+Quantity, TotalAmount, Status, ReOrderDate – NOT NULL
+
+10. ADMINISTRATORS
+Description:
+Stores admin staff who manage orders, inventory, and promotions.
+
+Key Attributes:
+
+AdminID – INT, Primary Key
+
+Email, Name – NOT NULL
+
+ContactNumber – optional
+
+11. INVENTORY
+Description:
+Tracks current stock level for each book. Updated by purchases and reorders.
+
+Key Attributes:
+
+ISBN – VARCHAR(13), Primary Key, FK → BOOKS
+
+CurrentStock – INT, CHECK (CurrentStock ≥ 0), NOT NULL
+
