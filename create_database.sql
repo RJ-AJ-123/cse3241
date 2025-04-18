@@ -1,4 +1,6 @@
 
+-- Indexes to improve query performance
+
 CREATE INDEX idx_customer_id ON Customers(CustomerID);
 CREATE INDEX idx_books_isbn ON Books(ISBN);
 CREATE INDEX idx_purchase_customer_id ON Purchases(CustomerID);
