@@ -140,3 +140,144 @@ ISBN – VARCHAR(13), Primary Key, FK → BOOKS
 
 CurrentStock – INT, CHECK (CurrentStock ≥ 0), NOT NULL
 
+///////////////////
+Section 2: Sample SQL Queries
+
+I.basic queries
+
+Query A – Books by Pratchett under $10
+English:
+Find the titles of all books written by "Pratchett" that cost less than $10.
+
+Relational Algebra:
+π_Title(σ_Authors = 'Pratchett' ∧ Price < 10 (BOOKS))
+
+SQL:
+SELECT Title
+FROM BOOKS
+WHERE Authors = 'Pratchett' AND Price < 10;
+
+
+Query B – Titles and Purchase Dates by Customer 1
+English:
+Show the titles and their purchase dates for purchases made by Customer ID = 1.
+
+Relational Algebra:
+π_Title, PurchaseDate(σ_CustomerID = 1(CUSTOMERS ⨝ PURCHASES ⨝ PURCHASEDETAILS ⨝ BOOKS))
+
+SQL:
+SELECT Title, PurchaseDate
+FROM CUSTOMERS
+JOIN PURCHASES P ON CUSTOMERS.CustomerID = P.CustomerID
+JOIN PURCHASEDETAILS P2 ON P.PurchaseID = P2.PurchaseID
+JOIN BOOKS B ON P2.ISBN = B.ISBN
+WHERE P.CustomerID = 1;
+
+
+Query C – Books with Less Than 5 in Stock
+English:
+Find the titles and ISBNs for all books that have fewer than 5 copies in inventory.
+
+Relational Algebra:
+π_Title, ISBN(σ_CurrentStock < 5(BOOKS ⨝ INVENTORY))
+
+SQL:
+SELECT Title, BOOKS.ISBN
+FROM BOOKS
+JOIN INVENTORY I ON BOOKS.ISBN = I.ISBN
+WHERE CurrentStock < 5;
+
+
+Query D – Customers Who Purchased Pratchett Books
+English:
+Get names of all customers who purchased a book by Pratchett and the titles of those books.
+
+Relational Algebra:
+π_Name, Title(σ_Authors = 'Pratchett'(CUSTOMERS ⨝ PURCHASES ⨝ PURCHASEDETAILS ⨝ BOOKS))
+
+SQL:
+SELECT CUSTOMERS.Name, B.Title
+FROM CUSTOMERS
+JOIN PURCHASES P ON CUSTOMERS.CustomerID = P.CustomerID
+JOIN PURCHASEDETAILS P2 ON P.PurchaseID = P2.PurchaseID
+JOIN BOOKS B ON P2.ISBN = B.ISBN
+WHERE B.Authors = 'Pratchett';
+
+
+Query E – Total Number of Books Purchased by Customer 1
+English:
+Calculate how many books in total were purchased by Customer ID = 1.
+
+Relational Algebra:
+γ_CustomerID; SUM(Quantity)(σ_CustomerID = 1(CUSTOMERS ⨝ PURCHASES ⨝ PURCHASEDETAILS))
+
+SQL:
+SELECT SUM(Quantity), CUSTOMERS.Name
+FROM CUSTOMERS
+JOIN PURCHASES P ON CUSTOMERS.CustomerID = P.CustomerID
+JOIN PURCHASEDETAILS P2 ON P.PurchaseID = P2.PurchaseID
+WHERE CUSTOMERS.CustomerID = 1;
+
+
+Query F – Customer Who Purchased the Most Books
+English:
+Find the customer who purchased the highest number of books and display the total.
+
+Relational Algebra:
+γ_CustomerID; SUM(Quantity) → TotalBooks(CUSTOMERS ⨝ PURCHASES ⨝ PURCHASEDETAILS)
+→ sort by TotalBooks descending
+→ top 1
+
+SQL:
+SELECT CUSTOMERS.Name, SUM(P2.Quantity) AS TotalBooks
+FROM CUSTOMERS
+JOIN PURCHASES P ON CUSTOMERS.CustomerID = P.CustomerID
+JOIN PURCHASEDETAILS P2 ON P.PurchaseID = P2.PurchaseID
+GROUP BY CUSTOMERS.CustomerID
+ORDER BY TotalBooks DESC
+LIMIT 1;
+
+II. extra queries
+
+
+Query 1 – Customers Who Gave 5-Star Reviews
+English:
+Find the names of all customers who have given a 5-star rating for any book.
+
+Relational Algebra:
+π_Name (σ_Rating = 5 (CUSTOMERS ⨝ REVIEWS))
+
+SQL:
+SELECT DISTINCT C.Name
+FROM CUSTOMERS C
+JOIN REVIEWS R ON C.CustomerID = R.CustomerID
+WHERE R.Rating = 5;
+
+
+Query 2 – Number of Purchases per Customer
+English:
+Calculate the total number of purchases made by each customer.
+
+Relational Algebra:
+γ_CustomerID, COUNT(PurchaseID) → TotalPurchases (PURCHASES)
+
+SQL:
+SELECT C.Name, COUNT(P.PurchaseID) AS TotalPurchases
+FROM CUSTOMERS C
+JOIN PURCHASES P ON C.CustomerID = P.CustomerID
+GROUP BY C.CustomerID;
+
+
+Query 3 – Average Rating for Books with ≥ 2 Reviews
+English:
+Retrieve the average rating for each book, but only include books that have at least 2 reviews.
+
+Relational Algebra:
+γ_ISBN; AVG(Rating)(σ_COUNT(ReviewID) ≥ 2 (REVIEWS))
+
+SQL:
+SELECT B.Title, AVG(R.Rating) AS AvgRating
+FROM BOOKS B
+JOIN REVIEWS R ON B.ISBN = R.ISBN
+GROUP BY B.ISBN
+HAVING COUNT(R.ReviewID) >= 2;
