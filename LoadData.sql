@@ -17,4 +17,4 @@ INSERT INTO REVIEWS (ReviewID, CustomerID, ISBN, Rating, ReviewText, ReviewDate)
 -- Inserting data into PurchaseDetailReferences table
 INSERT INTO PurchaseDetailReferences (PurchaseDetailsID, PurchaseID, ISBN) VALUES
 -- Inserting data into PurchaseItemDetails table
-INSERT INTO PurchaseItemDetails (PurchaseID, ISBN, Quantity, PricePerUnit) VALUES;
+INSERT INTO PurchaseItemDetails (PurchaseID, ISBN, Quantity, PricePerUnit) VALUES
