@@ -409,3 +409,64 @@ FROM BOOKS B
 JOIN PURCHASEDETAILS PD ON B.ISBN = PD.ISBN
 JOIN PURCHASES P ON PD.PurchaseID = P.PurchaseID
 WHERE P.CustomerID IN (SELECT CustomerID FROM HighSpenders);
+
+////////
+Section 3: Insert and Delete Syntax
+
+(note: ! used to explain foreign key dependencies)
+
+I. insert examples: 
+
+1. Insert a Customer and a Purchase
+
+❗ Insert Customer before Purchase due to FK constraint.
+
+INSERT INTO CUSTOMERS (CustomerID, ContactNumber, Name, Address, Email)
+VALUES (1, '206-880-5742', 'Rebecca Mills', 'PSC 6341, Box 4009, APO AE 75217', 'jonathanjohnson@example.com');
+
+INSERT INTO PURCHASES (PurchaseID, CustomerID, OrderStatus, PurchaseDate, TotalAmount)
+VALUES (1, 1, 'Delivered', '2026-09-30', 227.5);
+
+2. Insert a Purchase Item (Detail)
+
+❗ Purchase must exist before inserting details.
+
+INSERT INTO PURCHASEDETAILS (PurchaseDetailsID, PurchaseID, ISBN, Quantity, PricePerUnit)
+VALUES (1, 1, '3626767700882', 8, 46.73661);
+
+3. Insert a Review
+
+❗ Book and Customer must exist before inserting a review.
+
+INSERT INTO REVIEWS (ReviewID, CustomerID, ISBN, Rating, ReviewText, ReviewDate)
+VALUES (1, 1, '3626767700882', 5, 'Fantastic book! Must read.', '2026-01-31');
+
+II. DELETE examples:
+
+1. Delete a Customer and their Reviews
+
+❗ Must delete child records (Reviews) before deleting parent (Customer) unless ON DELETE CASCADE is defined.
+
+DELETE FROM REVIEWS WHERE CustomerID = 1;
+DELETE FROM CUSTOMERS WHERE CustomerID = 1;
+
+2. Delete a Book with Dependencies
+
+❗ Delete from PURCHASEDETAILS and REVIEWS before deleting the Book.
+
+DELETE FROM PURCHASEDETAILS WHERE ISBN = '3626767700882';
+DELETE FROM REVIEWS WHERE ISBN = '3626767700882';
+DELETE FROM BOOKS WHERE ISBN = '3626767700882';
+
+3. Delete a Publisher and All Related Books
+
+❗ All related books must be deleted first due to FK in BOOKS.
+
+DELETE FROM BOOKS WHERE PublisherName = 'Perez LLC';
+DELETE FROM PUBLISHERS WHERE PublisherName = 'Perez LLC';
+
+4. Delete a Promotion
+
+❗ Ensure no FK dependency exists in linking tables.
+
+DELETE FROM PROMOTIONS WHERE PromotionID = 1;
