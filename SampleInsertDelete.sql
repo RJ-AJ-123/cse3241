@@ -1,7 +1,5 @@
 
--- ====================================
--- SAMPLE INSERTS (Based on Schema)
--- ====================================
+
 
 -- 1. Insert a new Publisher
 INSERT INTO PUBLISHERS (PublisherName, Email, Address, ContactNumber)
