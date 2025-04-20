@@ -1,9 +1,4 @@
 
--- ================================
--- FinalQueries.sql
--- Purpose: Demonstration/Validation Queries
--- Compatible with SQLite prompt
--- ================================
 
 -- SECTION 1: Book Info and Inventory
 -- Get all books along with their current stock
