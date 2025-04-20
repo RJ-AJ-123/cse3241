@@ -1,9 +1,3 @@
--- Cleaned and Ordered CreateDatabase.sql
-
--- Contains only CREATE TABLE / INDEX / VIEW statements.
-
-
--- === CREATE TABLES ===
 
 CREATE TABLE BOOKS (
     ISBN VARCHAR(13) PRIMARY KEY,
