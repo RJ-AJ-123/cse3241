@@ -66,10 +66,16 @@ BitsAndBooks-FinalProject/
 - Original graded checkpoint submissions (Checkpoint1–4) including revisions and instructor feedback.
 
 ## Rebuilding the Database
-To rebuild the database from scratch, run the following commands in your terminal:
-```bash
-sqlite3 project.sqlite < CreateDatabase.sql
-sqlite3 project.sqlite < LoadData.sql
+
+To rebuild the database from scratch, follow these steps:
+
+    Make sure SQLite3 is installed
+        You can download it from: https://www.sqlite.org/download.html
+        Verify installation by running sqlite3 --version in your terminal.
+
+    Run the following commands in your terminal:
+        sqlite3 project.sqlite < CreateDatabase.sql
+        sqlite3 project.sqlite < LoadData.sql
 
 Alternatively, open project.sqlite directly in:
     DataGrip or https://sqliteonline.com/
